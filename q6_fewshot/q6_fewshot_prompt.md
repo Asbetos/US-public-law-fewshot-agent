@@ -30,16 +30,17 @@ DEFINITION's inclusions and exclusions before answering.
 
 DEFINITION:
 Construction is text related to building, repairing, maintaining, or
-deconstructing anything anchored to land - highways, roads, bridges,
-pipelines, dams, houses, buildings, monuments, and similar physical
-infrastructure.
+deconstructing anything anchored to land or seabed - highways, roads,
+bridges, pipelines, dams, houses, buildings, monuments, and similar
+physical infrastructure.
 
 Answer "Yes" when the SECTION involves ANY of the following:
   - building, erecting, rehabilitating, or RECONSTRUCTING a structure on land,
     anywhere in the world (not just the United States); monuments and
     memorials count, however small;
   - repair or maintenance of real property - including appropriations that
-    fund the "operation, maintenance, and repair" of buildings or facilities;
+    fund the "operation, maintenance, and repair" (or similar language) of
+    buildings or facilities;
   - money authorised for construction (even if unspent), and exclusions from
     or limits on construction funding;
   - REGULATION of construction (e.g. issuing construction and safety
@@ -52,7 +53,7 @@ Answer "Yes" when the SECTION involves ANY of the following:
 Answer "No" for these common traps:
   - procurement or maintenance of MOVABLE things: planes, ships, cars,
     rockets, other conveyances, furniture, and equipment (e.g. beds,
-    communications devices) - even when they are destined for a building;
+    communications devices) - even when they are destined to be in a building;
   - transfer, sale, or disposal of land that only vaguely suggests a future
     or unspecified construction project;
   - funding the ONGOING OPERATIONS of a physical plant or facility (power,

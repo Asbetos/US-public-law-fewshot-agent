@@ -29,6 +29,8 @@ can read automatically.
 | `q6_fewshot/build_prompt.py` | The assembler: combines rule book + solved cases + your new section into one request. Also the CLI. |
 | `q6_fewshot/extract_examples.py` | The importer: rebuilds `examples.json` from the CSV, with validation. |
 | `q6_fewshot/q6_fewshot_prompt.md` | The complete request rendered as one readable document (generated — do not hand-edit). |
+| `q1_fewshot/` | **Q1 (participation)** — the same five files for "Does this section recommend or require participation?", built from `data/Q1_examples.csv`. |
+| `*_fewshot/*_final_prompt.docx` | The SME-approved prompt document for each question — the authority for the instruction and definition wording. Edit it first, then mirror into `prompt_parts.py`. |
 | `run_model.py` | The runner: sends the prompt to any OpenAI-compatible model server (vLLM, Ollama, llama.cpp, hosted APIs) and parses the answer. |
 | `tests/test_q6_fewshot.py` | Automatic checks that keep every file consistent with the others. |
 

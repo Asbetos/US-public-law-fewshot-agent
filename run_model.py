@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""Label statute sections with the Q6 few-shot prompt via any OpenAI-compatible API.
+"""Label statute sections with the Q1 or Q6 few-shot prompt via any
+OpenAI-compatible API.
 
 Works with any server exposing /v1/chat/completions: vLLM (`vllm serve ...`),
 Ollama (http://localhost:11434/v1), llama.cpp server, or a hosted provider.
 Stdlib only - no packages to install.
 
 Single section:
-    python run_model.py --base-url http://localhost:8000/v1 \\
+    python run_model.py --question q6 --base-url http://localhost:8000/v1 \\
         --model meta-llama/Llama-3.1-8B-Instruct --section-file section.txt
 
 Batch (JSONL in, JSONL out; one {"id": ..., "text": ...} object per line):
-    python run_model.py --base-url http://localhost:8000/v1 \\
+    python run_model.py --question q1 --base-url http://localhost:8000/v1 \\
         --model meta-llama/Llama-3.1-8B-Instruct \\
         --input-jsonl sections.jsonl --output results.jsonl
 """
@@ -28,7 +29,10 @@ from pathlib import Path
 REPO_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(REPO_DIR))
 
-from q6_fewshot import build_messages  # noqa: E402
+import q1_fewshot  # noqa: E402
+import q6_fewshot  # noqa: E402
+
+KITS = {"q1": q1_fewshot, "q6": q6_fewshot}
 
 JSON_BLOCK = re.compile(r"```json\s*(\{.*?\})\s*```", re.DOTALL)
 VALID_LABELS = {"Yes", "No"}
@@ -73,6 +77,7 @@ def parse_reply(reply: str) -> dict | None:
 
 def label_section(section_text: str, args: argparse.Namespace) -> dict:
     """Send one section to the model; always returns a result dict."""
+    build_messages = KITS[args.question].build_messages
     try:
         reply = call_chat(args.base_url, args.model, build_messages(section_text),
                           api_key=args.api_key, temperature=args.temperature,
@@ -89,6 +94,8 @@ def label_section(section_text: str, args: argparse.Namespace) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--question", choices=sorted(KITS), default="q6",
+                        help="which few-shot kit to use (default: %(default)s)")
     parser.add_argument("--base-url", default="http://localhost:8000/v1",
                         help="OpenAI-compatible API root (default: %(default)s)")
     parser.add_argument("--model", required=True,
