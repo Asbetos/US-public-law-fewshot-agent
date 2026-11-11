@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import re
 import sys
@@ -35,6 +36,10 @@ import q6_fewshot  # noqa: E402
 KITS = {"q1": q1_fewshot, "q6": q6_fewshot}
 
 JSON_BLOCK = re.compile(r"```json\s*(\{.*?\})\s*```", re.DOTALL)
+# A reply that is nothing but the JSON object: some prompt layouts make models
+# drop the fence (Qwen did on half the flat-prompt replies). Prose around a bare
+# object is still rejected, so stray braces in reasoning are never read as answers.
+BARE_JSON = re.compile(r"\A\s*(\{.*\})\s*\Z", re.DOTALL)
 VALID_LABELS = {"Yes", "No"}
 
 
@@ -57,22 +62,56 @@ def call_chat(base_url: str, model: str, messages: list[dict],
     return data["choices"][0]["message"]["content"]
 
 
-def parse_reply(reply: str) -> dict | None:
-    """Extract the final ```json answer block; None if absent or malformed."""
-    blocks = JSON_BLOCK.findall(reply)
-    if not blocks:
+def parse_confidence(value) -> tuple[float | None, bool]:
+    """The optional "confidence" key as (value, invalid): a finite number in
+    [0, 1] passes; anything else (absent, bool, text, out of range) is (None, True).
+    The label is never discarded over a bad confidence."""
+    if isinstance(value, bool) or not isinstance(value, (int, float, str)):
+        return None, True
+    try:
+        c = float(value)
+    except (TypeError, ValueError):
+        return None, True
+    if not math.isfinite(c) or not 0.0 <= c <= 1.0:
+        return None, True
+    return c, False
+
+
+def answer_span(reply: str) -> tuple[int, int] | None:
+    """Character span of the answer object: the last fenced ```json block, or the
+    whole reply when it is a bare JSON object; None when there is neither."""
+    last = None
+    for last in JSON_BLOCK.finditer(reply):
+        pass
+    if last is not None:
+        return last.span(1)
+    bare = BARE_JSON.match(reply)
+    return bare.span(1) if bare else None
+
+
+def parse_reply(reply: str, confidence: bool = False) -> dict | None:
+    """Extract the final ```json answer block (or a reply that is only the JSON
+    object); None if absent or malformed.
+
+    With confidence=True (the kit built with its confidence flag) the result also
+    carries "confidence" and "confidence_invalid"."""
+    span = answer_span(reply)
+    if span is None:
         return None
     try:
-        payload = json.loads(blocks[-1])
+        payload = json.loads(reply[span[0]:span[1]])
     except json.JSONDecodeError:
         return None
     if not isinstance(payload, dict) or payload.get("label") not in VALID_LABELS:
         return None
-    return {
+    parsed = {
         "label": payload["label"],
         "quoted_span": payload.get("quoted_span", ""),
         "justification": payload.get("justification", ""),
     }
+    if confidence:
+        parsed["confidence"], parsed["confidence_invalid"] = parse_confidence(payload.get("confidence"))
+    return parsed
 
 
 def label_section(section_text: str, args: argparse.Namespace) -> dict:

@@ -2,6 +2,7 @@
 "Does this section recommend or require participation?" (Yes/No)."""
 
 from .build_prompt import (  # noqa: F401
+    build_flat_messages,
     build_flat_prompt,
     build_messages,
     load_examples,

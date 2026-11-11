@@ -1,0 +1,216 @@
+<div class="viz-root"><div class="wrap">
+
+  <header class="page">
+    <div>
+      <h1 id="page-title">Q1 participation: two model coders on the same sections</h1>
+      <p id="page-subtitle"></p>
+      <div class="status" id="status"></div>
+    </div>
+    <div class="spacer"></div>
+    <button class="ghost" id="theme">Toggle theme</button>
+  </header>
+
+  <section class="block">
+    <h2 class="sec">Headline</h2>
+    <div class="hero-card">
+      <div class="hero-fig">
+        <span class="lab" id="hero-lab"></span>
+        <span class="val" id="hero-val">—</span>
+        <span class="ci" id="hero-ci"></span>
+      </div>
+      <p class="hero-note" id="hero-note"></p>
+    </div>
+  </section>
+
+  <section class="block" id="findings-block">
+    <h2 class="sec" id="findings-title">What the Qwen run shows</h2>
+    <div class="findings" id="findings"></div>
+  </section>
+
+  <section class="block">
+    <h2 class="sec">Key measures</h2>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <section class="block" id="howto">
+    <h2 class="sec">How to read these numbers</h2>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-head"><h3 id="howto-title">Every answered section lands in one of four boxes</h3></div>
+        <p class="desc" id="howto-desc"></p>
+        <div id="howto-matrix"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>What each measure counts</h3></div>
+        <p class="desc">Each measure divides one box, or a sum of boxes, by another. The worked numbers use the counts on the left.</p>
+        <div class="defs" id="howto-defs"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="final">
+    <h2 class="sec">Each coder against the final reconciled label</h2>
+    <p class="lede" id="final-desc"></p>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-head"><h3>Caught, false alarms, and Yes calls that are right</h3></div>
+        <p class="desc">Catch rate: share of final-Yes sections the coder also calls Yes. False alarms: share of final-No sections it calls Yes. Yes calls that are right: share of its Yes calls that are final Yes.</p>
+        <div id="final-rates"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Agreement with the final label</h3></div>
+        <p class="desc">Agreement, kappa and AC1 with 95% intervals, and how often each coder says Yes beside the final label.</p>
+        <div id="final-table"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="wrong">
+    <h2 class="sec">Where the answers go wrong</h2>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-head"><h3>Disagreements with the final label, by section length</h3></div>
+        <p class="desc">Share of answered sections whose label differs from the final label, in each quarter of the sample by length. The table view has the counts.</p>
+        <div id="length"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Sections that ran out of reply room</h3></div>
+        <p class="desc">A reply has a length limit (768 tokens, about 550 words). A model that is still reasoning when it hits the limit never writes its answer. Failed sections were asked again; any still unanswered count as "no answer", never as No.</p>
+        <div id="retries"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="layout">
+    <h2 class="sec">Prompt layout: chat turns or one block</h2>
+    <p class="lede" id="layout-desc"></p>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-head"><h3>Same sections, two layouts, against the final label</h3></div>
+        <p class="desc" id="layout-rates-desc"></p>
+        <div id="layout-rates"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Which answers changed</h3></div>
+        <p class="desc">Rows: Qwen in the chat layout (main run). Columns: Qwen in the one-block layout, on the same sections.</p>
+        <div id="layout-matrix"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="confidence">
+    <h2 class="sec">Confidence: how sure each coder says it is</h2>
+    <p class="lede">With every label, each coder states a confidence from 0 to 1. It is the model's own claim, not a measured probability. Qwen also has a token probability, P(Yes): its internal probability for the word "Yes" at the moment it writes the label.</p>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-head"><h3>Where the stated confidence falls</h3></div>
+        <p class="desc">Number of answers in each confidence band.</p>
+        <div id="conf-hist"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Match with the final label, by stated confidence</h3></div>
+        <p class="desc">How often the coder's label equals the final label within each band. A useful confidence matches more often in the higher bands.</p>
+        <div id="conf-rel"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Using confidence to choose sections for a person to check</h3></div>
+        <p class="desc">If every answer stated below a cut-off (or with no confidence) went to a person, how many sections would they read and how many of the disagreements with the final label would they see?</p>
+        <div id="triage"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Qwen's P(Yes) is almost always 0 or 1</h3></div>
+        <p class="desc" id="pyes-desc"></p>
+        <div id="pyes"></div>
+      </div>
+      <div class="card both-only">
+        <div class="card-head"><h3>Agreement with the other coder, by confidence</h3></div>
+        <p class="desc">Within each coder's own confidence band: how often the other coder gave the same label.</p>
+        <div id="conf-agree"></div>
+      </div>
+      <div class="card both-only">
+        <div class="card-head"><h3>Qwen's P(Yes) where Claude says Yes or No</h3></div>
+        <p class="desc">Share of sections by Qwen's P(Yes) band, split by Claude's label.</p>
+        <div id="graded"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block both-only">
+    <h2 class="sec">The two coders against each other</h2>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-head"><h3>Who said what</h3></div>
+        <p class="desc">Sections with a label from both coders. Rows are Claude, columns are Qwen.</p>
+        <div id="confusion"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>How often each says Yes</h3></div>
+        <p class="desc">Share of sections labelled Yes by each coder, beside the final reconciled label on the same sections. The rate-matched bar is Qwen cut at the probability that gives Claude's Yes rate.</p>
+        <div id="yesrates"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block both-only">
+    <h2 class="sec">Slices</h2>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-head"><h3>Yes rates by section length</h3></div>
+        <p class="desc">Both coders and the final label across length quarters of the sample.</p>
+        <div id="slice-length"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Agreement by slice</h3></div>
+        <p class="desc">Agreement between the two coders, the Yes rates, and how often each matches the final label, by length, number of human coders and volume.</p>
+        <div id="slice-table"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="errors">
+    <h2 class="sec">Sections where a coder differs from the final label</h2>
+    <p class="lede">Every section where a model's label is not the final label, or where it gave no answer, with the passage it quoted and its own reason. Filter to read the misses or the false alarms.</p>
+    <div class="filters" id="fe-filters"></div>
+    <div class="err-list" id="fe-list"></div>
+    <div class="err-more"><button class="ghost" id="fe-more">Show more</button></div>
+  </section>
+
+  <section class="block both-only">
+    <h2 class="sec">Where the two coders disagree</h2>
+    <div class="filters" id="dis-filters"></div>
+    <div class="err-list" id="dis-list"></div>
+    <div class="err-more"><button class="ghost" id="dis-more">Show more</button></div>
+  </section>
+
+  <section class="block" id="secondary">
+    <h2 class="sec">Secondary: against the coders' first answers (before reconciliation)</h2>
+    <p class="lede">A different question from the sections above: is a model as consistent with one human coder as a second human coder is? Each model takes one coder's seat and is scored against the other coder's first answer, before any reconciliation. These numbers are on a different scale from the final-label ones and are not compared with them.</p>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-head"><h3>Coder replacement: kappa against a human coder</h3></div>
+        <p class="desc">Gray marker: the two coders' agreement with each other on these sections. Colored marker: the model in the second coder's seat. The difference and its 95% interval sit beside each pair.</p>
+        <div id="replacement"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Caught and false alarms on the first answers</h3></div>
+        <p class="desc">Share of sections where every coder first answered Yes that the model calls Yes; share where every coder first answered No that it calls Yes; share where at least one coder first answered Yes.</p>
+        <div id="hitfa"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2 class="sec">How this was run</h2>
+    <div class="grid2">
+      <div class="card"><div class="card-head"><h3>Qwen coder</h3></div><dl class="kv" id="facts-qwen"></dl></div>
+      <div class="card"><div class="card-head"><h3>Claude coder</h3></div><dl class="kv" id="facts-claude"></dl><div id="repeat"></div></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2 class="sec">Read with care</h2>
+    <ul id="caveats" class="caveats"></ul>
+  </section>
+
+  <footer class="page" id="footer"></footer>
+</div></div>

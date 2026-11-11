@@ -192,6 +192,36 @@ def test_q1_question_and_definition_match_sme_doc():
     assert "requiring a public comment period, or requiring rulemaking;" in d
 
 
+def test_q1_confidence_flag_adds_only_the_extra_key_text():
+    """The two-coder study's opt-in key must not touch the SME wording or the
+    exemplars, and the default must stay byte-identical to the kit as shipped."""
+    from q1_fewshot import build_prompt as b
+    default = b.build_messages(TARGET)
+    with_key = b.build_messages(TARGET, confidence=True)
+    assert default == b.build_messages(TARGET, confidence=False)
+    assert "confidence" not in default[0]["content"]
+    assert b.CONFIDENCE_BULLET in with_key[0]["content"]
+    assert with_key[0]["content"].replace(b.CONFIDENCE_BULLET, "", 1) == default[0]["content"]
+    assert with_key[1:-1] == default[1:-1]            # the 12 exemplar pairs are untouched
+    assert with_key[-1]["content"] == default[-1]["content"] + "\n\n" + b.CONFIDENCE_REMINDER
+    # the new key sits inside the instruction's own key list, right after "justification"
+    assert with_key[0]["content"].index('"justification"') < with_key[0]["content"].index('"confidence"') \
+        < with_key[0]["content"].index("DEFINITION:")
+    assert b.PARTICIPATION_DEFINITION in with_key[0]["content"]
+
+
+@pytest.mark.parametrize("confidence", [False, True])
+def test_q1_flat_messages_split_the_flat_prompt_exactly(confidence):
+    from q1_fewshot import build_prompt as b
+    system, user = b.build_flat_messages(TARGET, confidence=confidence)
+    assert (system["role"], user["role"]) == ("system", "user")
+    assert system["content"] + "\n\n" + user["content"] == b.build_flat_prompt(
+        TARGET, confidence=confidence)
+    assert user["content"].startswith(b.FLAT_SECTION_HEADER)
+    assert TARGET in user["content"] and TARGET not in system["content"]
+    assert "### Example 12" in system["content"]
+
+
 def test_q1_empty_section_cell_was_repaired():
     """The SME left this exemplar's section cell empty and pasted the full
     section into the quoted-span cell; the extractor promotes it."""

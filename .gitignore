@@ -4,3 +4,14 @@ __pycache__/
 .venv/
 venv/
 .DS_Store
+.venv-vllm/
+# the experiment corpus stays on the group folder, not in git
+data/fewshot_q1q6/
+# generated results; of the Q1 two-coder study only the shareable outputs are tracked
+results/*
+!results/q1_panel3k/
+results/q1_panel3k/*
+!results/q1_panel3k/dashboard.html
+!results/q1_panel3k/qwen_output.jsonl
+!results/q1_panel3k/q1_two_coder_sheet.csv
+!results/q1_panel3k/q1_two_coder_sheet.xlsx
