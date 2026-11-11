@@ -145,12 +145,50 @@ EXTRA_CSS = """
 """
 
 
-def render(data: dict) -> str:
+# A claude.ai artifact is wrapped in its own document skeleton and composited over
+# the viewer's theme: the colour tokens must also live on :root, the page needs an
+# explicit background, and the side gutter clears a phone's safe areas.
+ARTIFACT_CSS = """
+.viz-root { padding-block: 32px 64px; padding-left: max(28px, env(safe-area-inset-left, 0px));
+            padding-right: max(28px, env(safe-area-inset-right, 0px)); }
+@media (max-width: 720px) {
+  .viz-root { padding-block: 20px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px));
+              padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+}
+"""
+
+
+def artifact_css(css: str) -> str:
+    """The shared stylesheet with its three token blocks also applied to :root."""
+    css = css.replace(".viz-root {", ":root, .viz-root {", 1)
+    css = css.replace(':root:where(:not([data-theme="light"])) .viz-root {',
+                      ':root:not([data-theme="light"]), :root:not([data-theme="light"]) .viz-root {')
+    return css.replace(':root[data-theme="dark"] .viz-root {',
+                       ':root[data-theme="dark"], :root[data-theme="dark"] .viz-root {')
+
+
+def render(data: dict, artifact: bool = False) -> str:
     css = SHARED_CSS.read_text(encoding="utf-8")
     body = (ASSETS / "body.html").read_text(encoding="utf-8")
     js = (ASSETS / "compare.js").read_text(encoding="utf-8")
     payload = json.dumps(data, separators=(",", ":"), default=str,
                          allow_nan=False).replace("</", "<\\/")
+    if artifact:
+        return f"""<title>Q1 two-coder study</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+{artifact_css(css)}
+{EXTRA_CSS}
+{ARTIFACT_CSS}
+</style>
+{body}
+<div id="tip"></div>
+<script id="payload" type="application/json">{payload}</script>
+<script>
+{js}
+renderComparison(JSON.parse(document.getElementById("payload").textContent));
+</script>
+"""
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -181,9 +219,11 @@ def main() -> None:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--results", type=Path, default=RESULTS)
     ap.add_argument("--out", type=Path, default=None)
+    ap.add_argument("--artifact", action="store_true",
+                    help="write the page body for a claude.ai artifact (no document wrapper)")
     args = ap.parse_args()
     out = args.out or args.results / "dashboard.html"
-    out.write_text(render(load_payload(args.results)), encoding="utf-8")
+    out.write_text(render(load_payload(args.results), artifact=args.artifact), encoding="utf-8")
     print(f"wrote {out}  ({out.stat().st_size/1024:.0f} KB, fully self-contained)")
 
 
